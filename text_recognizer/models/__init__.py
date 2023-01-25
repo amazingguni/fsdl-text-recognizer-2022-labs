@@ -1,3 +1,4 @@
 from .cnn import CNN
 from .line_cnn_simple import LineCNNSimple
 from .mlp import MLP
+from .resnet_transformer import ResnetTransformer
