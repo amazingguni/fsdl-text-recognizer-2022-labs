@@ -10,6 +10,7 @@ FC1_DIM = 1024
 FC2_DIM = 128
 FC_DROPOUT = 0.5
 
+
 class MLP(nn.Module):
     """Simple MLP suitable for recognizing single characters."""
 

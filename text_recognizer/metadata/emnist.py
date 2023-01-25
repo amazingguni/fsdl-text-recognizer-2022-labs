@@ -7,7 +7,9 @@ METADATA_FILENAME = RAW_DATA_DIRNAME / "metadata.toml"
 DL_DATA_DIRNAME = shared.DATA_DIRNAME / "downloaded" / "emnist"
 PROCESSED_DATA_DIRNAME = shared.DATA_DIRNAME / "processed" / "emnist"
 PROCESSED_DATA_FILENAME = PROCESSED_DATA_DIRNAME / "byclass.h5"
-ESSENTIALS_FILENAME = Path(__file__).parents[1].resolve() / "data" / "emnist_essentials.json"
+ESSENTIALS_FILENAME = (
+    Path(__file__).parents[1].resolve() / "data" / "emnist_essentials.json"
+)
 
 NUM_SPECIAL_TOKENS = 4
 INPUT_SHAPE = (28, 28)

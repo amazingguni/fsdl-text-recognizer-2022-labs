@@ -8,11 +8,13 @@ import numpy as np
 import text_recognizer.metadata.iam_paragraphs as metadata
 from PIL import Image
 from pytorch_lightning.utilities.rank_zero import rank_zero_info
-from text_recognizer.data.base_data_module import (BaseDataModule,
-                                                   load_and_print_info)
+from text_recognizer.data.base_data_module import BaseDataModule, load_and_print_info
 from text_recognizer.data.iam import IAM
-from text_recognizer.data.util import (BaseDataset, convert_strings_to_labels,
-                                       resize_image)
+from text_recognizer.data.util import (
+    BaseDataset,
+    convert_strings_to_labels,
+    resize_image,
+)
 from text_recognizer.stems.paragraph import ParagraphStem
 
 IMAGE_SCALE_FACTOR = metadata.IMAGE_SCALE_FACTOR
@@ -32,7 +34,9 @@ class IAMParagraphs(BaseDataModule):
         self.inverse_mapping = {v: k for k, v in enumerate(self.mapping)}
 
         self.input_dims = metadata.DIMS  # We assert that this is correct in setup()
-        self.output_dims = metadata.OUTPUT_DIMS  # We assert that this is correct in setup()
+        self.output_dims = (
+            metadata.OUTPUT_DIMS
+        )  # We assert that this is correct in setup()
 
         self.transform = ParagraphStem()
         self.trainval_transform = ParagraphStem(augment=self.augment)
@@ -75,14 +79,22 @@ class IAMParagraphs(BaseDataModule):
     def setup(self, stage: str = None) -> None:
         def _load_dataset(split: str, transform: Callable) -> BaseDataset:
             crops, labels = load_processed_crops_and_labels(split)
-            Y = convert_strings_to_labels(strings=labels, mapping=self.inverse_mapping, length=self.output_dims[0])
+            Y = convert_strings_to_labels(
+                strings=labels, mapping=self.inverse_mapping, length=self.output_dims[0]
+            )
             return BaseDataset(crops, Y, transform=transform)
 
-        rank_zero_info(f"IAMParagraphs.setup({stage}): Loading IAM paragraph regions and lines...")
-        validate_input_and_output_dimensions(input_dims=self.input_dims, output_dims=self.output_dims)
+        rank_zero_info(
+            f"IAMParagraphs.setup({stage}): Loading IAM paragraph regions and lines..."
+        )
+        validate_input_and_output_dimensions(
+            input_dims=self.input_dims, output_dims=self.output_dims
+        )
 
         if stage == "fit" or stage is None:
-            self.data_train = _load_dataset(split="train", transform=self.trainval_transform)
+            self.data_train = _load_dataset(
+                split="train", transform=self.trainval_transform
+            )
             self.data_val = _load_dataset(split="val", transform=self.transform)
 
         if stage == "test" or stage is None:
@@ -118,10 +130,17 @@ def validate_input_and_output_dimensions(
     properties = get_dataset_properties()
 
     max_image_shape = properties["crop_shape"]["max"] / IMAGE_SCALE_FACTOR
-    assert input_dims is not None and input_dims[1] >= max_image_shape[0] and input_dims[2] >= max_image_shape[1]
+    assert (
+        input_dims is not None
+        and input_dims[1] >= max_image_shape[0]
+        and input_dims[2] >= max_image_shape[1]
+    )
 
     # Add 2 because of start and end tokens
-    assert output_dims is not None and output_dims[0] >= properties["label_length"]["max"] + 2
+    assert (
+        output_dims is not None
+        and output_dims[0] >= properties["label_length"]["max"] + 2
+    )
 
 
 def get_paragraph_crops_and_labels(
@@ -140,7 +159,9 @@ def get_paragraph_crops_and_labels(
     return crops, labels
 
 
-def save_crops_and_labels(crops: Dict[str, Image.Image], labels: Dict[str, str], split: str):
+def save_crops_and_labels(
+    crops: Dict[str, Image.Image], labels: Dict[str, str], split: str
+):
     """Save crops, labels and shapes of crops of a split."""
     (PROCESSED_DATA_DIRNAME / split).mkdir(parents=True, exist_ok=True)
 
@@ -151,13 +172,17 @@ def save_crops_and_labels(crops: Dict[str, Image.Image], labels: Dict[str, str],
         crop.save(_crop_filename(id_, split))
 
 
-def load_processed_crops_and_labels(split: str) -> Tuple[Sequence[Image.Image], Sequence[str]]:
+def load_processed_crops_and_labels(
+    split: str,
+) -> Tuple[Sequence[Image.Image], Sequence[str]]:
     """Load processed crops and labels for given split."""
     with open(_labels_filename(split), "r") as f:
         labels = json.load(f)
 
     sorted_ids = sorted(labels.keys())
-    ordered_crops = [Image.open(_crop_filename(id_, split)).convert("L") for id_ in sorted_ids]
+    ordered_crops = [
+        Image.open(_crop_filename(id_, split)).convert("L") for id_ in sorted_ids
+    ]
     ordered_labels = [labels[id_] for id_ in sorted_ids]
 
     assert len(ordered_crops) == len(ordered_labels)
@@ -179,7 +204,10 @@ def get_dataset_properties() -> dict:
             "min": min(_get_property_values("label_length")),
             "max": max(_get_property_values("label_length")),
         },
-        "num_lines": {"min": min(_get_property_values("num_lines")), "max": max(_get_property_values("num_lines"))},
+        "num_lines": {
+            "min": min(_get_property_values("num_lines")),
+            "max": max(_get_property_values("num_lines")),
+        },
         "crop_shape": {"min": crop_shapes.min(axis=0), "max": crop_shapes.max(axis=0)},
         "aspect_ratio": {"min": aspect_ratios.min(), "max": aspect_ratios.max()},
     }

@@ -2,8 +2,7 @@
 import argparse
 
 import text_recognizer.metadata.mnist as metadata
-from text_recognizer.data.base_data_module import (BaseDataModule,
-                                                   load_and_print_info)
+from text_recognizer.data.base_data_module import BaseDataModule, load_and_print_info
 from text_recognizer.stems.image import MNISTStem
 from torch.utils.data import random_split
 from torchvision.datasets import MNIST as TorchMNIST
@@ -29,7 +28,9 @@ class MNIST(BaseDataModule):
         """Split into train, val, test, and set dims."""
         mnist_full = TorchMNIST(self.data_dir, train=True, transform=self.transform)
         self.data_train, self.data_val = random_split(mnist_full, [metadata.TRAIN_SIZE, metadata.VAL_SIZE])  # type: ignore
-        self.data_test = TorchMNIST(self.data_dir, train=False, transform=self.transform)
+        self.data_test = TorchMNIST(
+            self.data_dir, train=False, transform=self.transform
+        )
 
 
 if __name__ == "__main__":

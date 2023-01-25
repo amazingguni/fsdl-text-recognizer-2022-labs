@@ -10,9 +10,11 @@ import h5py
 import numpy as np
 import text_recognizer.metadata.emnist as metadata
 import toml
-from text_recognizer.data.base_data_module import (BaseDataModule,
-                                                   _download_raw_dataset,
-                                                   load_and_print_info)
+from text_recognizer.data.base_data_module import (
+    BaseDataModule,
+    _download_raw_dataset,
+    load_and_print_info,
+)
 from text_recognizer.data.util import BaseDataset, split_dataset
 from text_recognizer.stems.image import ImageStem
 from text_recognizer.util import temporary_working_directory
@@ -26,7 +28,9 @@ PROCESSED_DATA_DIRNAME = metadata.PROCESSED_DATA_DIRNAME
 PROCESSED_DATA_FILENAME = metadata.PROCESSED_DATA_FILENAME
 ESSENTIALS_FILENAME = metadata.ESSENTIALS_FILENAME
 
-SAMPLE_TO_BALANCE = True  # If true, take at most the mean number of instances per class.
+SAMPLE_TO_BALANCE = (
+    True  # If true, take at most the mean number of instances per class.
+)
 TRAIN_FRAC = 0.8
 
 
@@ -60,14 +64,20 @@ class EMNIST(BaseDataModule):
                 self.x_trainval = f["x_train"][:]
                 self.y_trainval = f["y_train"][:].squeeze().astype(int)
 
-            data_trainval = BaseDataset(self.x_trainval, self.y_trainval, transform=self.transform)
-            self.data_train, self.data_val = split_dataset(base_dataset=data_trainval, fraction=TRAIN_FRAC, seed=42)
+            data_trainval = BaseDataset(
+                self.x_trainval, self.y_trainval, transform=self.transform
+            )
+            self.data_train, self.data_val = split_dataset(
+                base_dataset=data_trainval, fraction=TRAIN_FRAC, seed=42
+            )
 
         if stage == "test" or stage is None:
             with h5py.File(PROCESSED_DATA_FILENAME, "r") as f:
                 self.x_test = f["x_test"][:]
                 self.y_test = f["y_test"][:].squeeze().astype(int)
-            self.data_test = BaseDataset(self.x_test, self.y_test, transform=self.transform)
+            self.data_test = BaseDataset(
+                self.x_test, self.y_test, transform=self.transform
+            )
 
     def __repr__(self):
         basic = f"EMNIST Dataset\nNum classes: {len(self.mapping)}\nMapping: {self.mapping}\nDims: {self.input_dims}\n"
@@ -101,9 +111,17 @@ def _process_raw_dataset(filename: str, dirname: Path):
 
         print("Loading training data from .mat file")
         data = loadmat("matlab/emnist-byclass.mat")
-        x_train = data["dataset"]["train"][0, 0]["images"][0, 0].reshape(-1, 28, 28).swapaxes(1, 2)
+        x_train = (
+            data["dataset"]["train"][0, 0]["images"][0, 0]
+            .reshape(-1, 28, 28)
+            .swapaxes(1, 2)
+        )
         y_train = data["dataset"]["train"][0, 0]["labels"][0, 0] + NUM_SPECIAL_TOKENS
-        x_test = data["dataset"]["test"][0, 0]["images"][0, 0].reshape(-1, 28, 28).swapaxes(1, 2)
+        x_test = (
+            data["dataset"]["test"][0, 0]["images"][0, 0]
+            .reshape(-1, 28, 28)
+            .swapaxes(1, 2)
+        )
         y_test = data["dataset"]["test"][0, 0]["labels"][0, 0] + NUM_SPECIAL_TOKENS
         # NOTE that we add NUM_SPECIAL_TOKENS to targets, since these tokens are the first class indices
 

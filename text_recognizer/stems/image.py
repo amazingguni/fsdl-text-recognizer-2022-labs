@@ -40,4 +40,6 @@ class MNISTStem(ImageStem):
 
     def __init__(self):
         super().__init__()
-        self.torch_transforms = torch.nn.Sequential(transforms.Normalize((0.1307,), (0.3081,)))
+        self.torch_transforms = torch.nn.Sequential(
+            transforms.Normalize((0.1307,), (0.3081,))
+        )

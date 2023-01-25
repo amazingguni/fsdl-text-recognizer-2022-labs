@@ -3,7 +3,9 @@ from typing import Union
 import torch
 
 
-def first_appearance(x: torch.Tensor, element: Union[int, float], dim: int = 1) -> torch.Tensor:
+def first_appearance(
+    x: torch.Tensor, element: Union[int, float], dim: int = 1
+) -> torch.Tensor:
     """Return indices of first appearance of element in x, collapsing along dim.
 
     Based on https://discuss.pytorch.org/t/first-nonzero-index/24769/9
@@ -36,7 +38,9 @@ def first_appearance(x: torch.Tensor, element: Union[int, float], dim: int = 1) 
     tensor(0)
     """
     if x.dim() > 2 or x.dim() == 0:
-        raise ValueError(f"only 1 or 2 dimensional Tensors allowed, got Tensor with dim {x.dim()}")
+        raise ValueError(
+            f"only 1 or 2 dimensional Tensors allowed, got Tensor with dim {x.dim()}"
+        )
     matches = x == element
     first_appearance_mask = (matches.cumsum(dim) == 1) & matches
     does_match, match_index = first_appearance_mask.max(dim)
@@ -44,7 +48,9 @@ def first_appearance(x: torch.Tensor, element: Union[int, float], dim: int = 1) 
     return first_inds
 
 
-def replace_after(x: torch.Tensor, element: Union[int, float], replace: Union[int, float]) -> torch.Tensor:
+def replace_after(
+    x: torch.Tensor, element: Union[int, float], replace: Union[int, float]
+) -> torch.Tensor:
     """Replace all values in each row of 2d Tensor x after the first appearance of element with replace.
 
     Parameters
@@ -72,7 +78,8 @@ def replace_after(x: torch.Tensor, element: Union[int, float], replace: Union[in
     first_appearances = first_appearance(x, element, dim=1)  # (B,)
     indices = torch.arange(0, x.shape[-1]).type_as(x)  # (S,)
     outs = torch.where(
-        indices[None, :] <= first_appearances[:, None],  # if index is before first appearance
+        indices[None, :]
+        <= first_appearances[:, None],  # if index is before first appearance
         x,  # return the value from x
         replace,  # otherwise, return the replacement value
     )

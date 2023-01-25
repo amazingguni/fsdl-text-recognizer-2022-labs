@@ -34,7 +34,9 @@ def _download_raw_dataset(metadata: Dict, dl_dirname: Path) -> Path:
     print("Computing SHA-256...")
     sha256 = util.compute_sha256(filename)
     if sha256 != metadata["sha256"]:
-        raise ValueError("Downloaded data file SHA-256 does not match that listed in metadata document.")
+        raise ValueError(
+            "Downloaded data file SHA-256 does not match that listed in metadata document."
+        )
     return filename
 
 
@@ -45,7 +47,9 @@ NUM_AVAIL_GPUS = torch.cuda.device_count()
 # sensible multiprocessing defaults: at most one worker per CPU
 DEFAULT_NUM_WORKERS = NUM_AVAIL_CPUS
 # but in distributed data parallel mode, we launch a training on each GPU, so must divide out to keep total at one worker per CPU
-DEFAULT_NUM_WORKERS = NUM_AVAIL_CPUS // NUM_AVAIL_GPUS if NUM_AVAIL_GPUS else DEFAULT_NUM_WORKERS
+DEFAULT_NUM_WORKERS = (
+    NUM_AVAIL_CPUS // NUM_AVAIL_GPUS if NUM_AVAIL_GPUS else DEFAULT_NUM_WORKERS
+)
 
 
 class BaseDataModule(pl.LightningDataModule):
@@ -92,7 +96,11 @@ class BaseDataModule(pl.LightningDataModule):
 
     def config(self):
         """Return important settings of the dataset, which will be passed to instantiate models."""
-        return {"input_dims": self.input_dims, "output_dims": self.output_dims, "mapping": self.mapping}
+        return {
+            "input_dims": self.input_dims,
+            "output_dims": self.output_dims,
+            "mapping": self.mapping,
+        }
 
     def prepare_data(self, *args, **kwargs) -> None:
         """Take the first steps to prepare data for use.
