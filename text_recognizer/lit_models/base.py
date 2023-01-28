@@ -37,9 +37,7 @@ class BaseLitModel(pl.LightningModule):
             self.loss_fn = getattr(torch.nn.functional, loss)
 
         self.one_cycle_max_lr = self.args.get("one_cycle_max_lr", None)
-        self.one_cycle_total_steps = self.args.get(
-            "one_cycle_total_steps", ONE_CYCLE_TOTAL_STEPS
-        )
+        self.one_cycle_total_steps = self.args.get("one_cycle_total_steps", ONE_CYCLE_TOTAL_STEPS)
 
         self.train_acc = Accuracy()
         self.val_acc = Accuracy()
@@ -55,9 +53,7 @@ class BaseLitModel(pl.LightningModule):
         )
         parser.add_argument("--lr", type=float, default=LR)
         parser.add_argument("--one_cycle_max_lr", type=float, default=None)
-        parser.add_argument(
-            "--one_cycle_total_steps", type=int, default=ONE_CYCLE_TOTAL_STEPS
-        )
+        parser.add_argument("--one_cycle_total_steps", type=int, default=ONE_CYCLE_TOTAL_STEPS)
         parser.add_argument(
             "--loss",
             type=str,
@@ -112,9 +108,7 @@ class BaseLitModel(pl.LightningModule):
         self.val_acc(logits, y)
 
         self.log("validation/loss", loss, prog_bar=True, sync_dist=True)
-        self.log(
-            "validation/acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True
-        )
+        self.log("validation/acc", self.val_acc, on_step=False, on_epoch=True, prog_bar=True)
 
         outputs = {"loss": loss}
         self.add_on_first_batch({"logits": logits.detach()}, outputs, batch_idx)

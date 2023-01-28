@@ -119,13 +119,9 @@ class LineCNN(nn.Module):
                 nn.ConvTranspose3d,
                 nn.Linear,
             }:
-                nn.init.kaiming_normal_(
-                    m.weight.data, a=0, mode="fan_out", nonlinearity="relu"
-                )
+                nn.init.kaiming_normal_(m.weight.data, a=0, mode="fan_out", nonlinearity="relu")
                 if m.bias is not None:
-                    _fan_in, fan_out = nn.init._calculate_fan_in_and_fan_out(
-                        m.weight.data
-                    )
+                    _fan_in, fan_out = nn.init._calculate_fan_in_and_fan_out(m.weight.data)
                     bound = 1 / math.sqrt(fan_out)
                     nn.init.normal_(m.bias, -bound, bound)
 

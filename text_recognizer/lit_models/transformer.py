@@ -72,9 +72,7 @@ class TransformerLitModel(BaseImageToTextLitModel):
         self.log("validation/cer", self.val_cer, prog_bar=True, sync_dist=True)
 
         pred_strs, gt_strs = self.batchmap(preds), self.batchmap(y)
-        self.add_on_first_batch(
-            {"pred_strs": pred_strs, "gt_strs": gt_strs}, outputs, batch_idx
-        )
+        self.add_on_first_batch({"pred_strs": pred_strs, "gt_strs": gt_strs}, outputs, batch_idx)
         self.add_on_first_batch({"logits": logits.detach()}, outputs, batch_idx)
 
         return outputs
@@ -95,9 +93,7 @@ class TransformerLitModel(BaseImageToTextLitModel):
         self.log("test/cer", self.val_cer, prog_bar=True, sync_dist=True)
 
         pred_strs, gt_strs = self.batchmap(preds), self.batchmap(y)
-        self.add_on_first_batch(
-            {"pred_strs": pred_strs, "gt_strs": gt_strs}, outputs, batch_idx
-        )
+        self.add_on_first_batch({"pred_strs": pred_strs, "gt_strs": gt_strs}, outputs, batch_idx)
         self.add_on_first_batch({"logits": logits.detach()}, outputs, batch_idx)
 
         return outputs
@@ -113,9 +109,7 @@ class TransformerLitModel(BaseImageToTextLitModel):
         """Maps a list of lists of integers to a list of strings using the lit model's mapping."""
         return [self.map(k, ignore) for k in ks]
 
-    def get_preds(
-        self, logitlikes: torch.Tensor, replace_after_end: bool = True
-    ) -> torch.Tensor:
+    def get_preds(self, logitlikes: torch.Tensor, replace_after_end: bool = True) -> torch.Tensor:
         """Converts logit-like Tensors into prediction indices, optionally overwritten after end token index.
 
         Parameters

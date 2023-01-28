@@ -71,9 +71,7 @@ class EMNISTLines(BaseDataModule):
             default=DEFAULT_MAX_OVERLAP,
             help=f"Max overlap between characters in a line, between 0 and 1. Default is {DEFAULT_MAX_OVERLAP}",
         )
-        parser.add_argument(
-            "--with_start_end_tokens", action="store_true", default=False
-        )
+        parser.add_argument("--with_start_end_tokens", action="store_true", default=False)
         return parser
 
     @property
@@ -135,28 +133,20 @@ class EMNISTLines(BaseDataModule):
 
         from text_recognizer.data.sentence_generator import SentenceGenerator
 
-        sentence_generator = SentenceGenerator(
-            self.max_length - 2
-        )  # Subtract two because we will add start/end tokens
+        sentence_generator = SentenceGenerator(self.max_length - 2)  # Subtract two because we will add start/end tokens
 
         emnist = self.emnist
         emnist.prepare_data()
         emnist.setup()
 
         if split == "train":
-            samples_by_char = get_samples_by_char(
-                emnist.x_trainval, emnist.y_trainval, emnist.mapping
-            )
+            samples_by_char = get_samples_by_char(emnist.x_trainval, emnist.y_trainval, emnist.mapping)
             num = self.num_train
         elif split == "val":
-            samples_by_char = get_samples_by_char(
-                emnist.x_trainval, emnist.y_trainval, emnist.mapping
-            )
+            samples_by_char = get_samples_by_char(emnist.x_trainval, emnist.y_trainval, emnist.mapping)
             num = self.num_val
         else:
-            samples_by_char = get_samples_by_char(
-                emnist.x_test, emnist.y_test, emnist.mapping
-            )
+            samples_by_char = get_samples_by_char(emnist.x_test, emnist.y_test, emnist.mapping)
             num = self.num_test
 
         PROCESSED_DATA_DIRNAME.mkdir(parents=True, exist_ok=True)
@@ -186,9 +176,7 @@ def get_samples_by_char(samples, labels, mapping):
     return samples_by_char
 
 
-def select_letter_samples_for_string(
-    string, samples_by_char, char_shape=(metadata.CHAR_HEIGHT, metadata.CHAR_WIDTH)
-):
+def select_letter_samples_for_string(string, samples_by_char, char_shape=(metadata.CHAR_HEIGHT, metadata.CHAR_WIDTH)):
     zero_image = torch.zeros(char_shape, dtype=torch.uint8)
     sample_image_by_char = {}
     for char in string:
@@ -219,16 +207,12 @@ def construct_image_from_string(
     return torch.minimum(torch.Tensor([255]), concatenated_image)
 
 
-def create_dataset_of_images(
-    N, samples_by_char, sentence_generator, min_overlap, max_overlap, dims
-):
+def create_dataset_of_images(N, samples_by_char, sentence_generator, min_overlap, max_overlap, dims):
     images = torch.zeros((N, dims[1], dims[2]))
     labels = []
     for n in range(N):
         label = sentence_generator.generate()
-        images[n] = construct_image_from_string(
-            label, samples_by_char, min_overlap, max_overlap, dims[-1]
-        )
+        images[n] = construct_image_from_string(label, samples_by_char, min_overlap, max_overlap, dims[-1])
         labels.append(label)
     return images, labels
 

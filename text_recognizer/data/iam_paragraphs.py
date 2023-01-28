@@ -37,9 +37,7 @@ class IAMParagraphs(BaseDataModule):
         self.inverse_mapping = {v: k for k, v in enumerate(self.mapping)}
 
         self.input_dims = metadata.DIMS  # We assert that this is correct in setup()
-        self.output_dims = (
-            metadata.OUTPUT_DIMS
-        )  # We assert that this is correct in setup()
+        self.output_dims = metadata.OUTPUT_DIMS  # We assert that this is correct in setup()
 
         self.transform = ParagraphStem()
         self.trainval_transform = ParagraphStem(augment=self.augment)
@@ -82,22 +80,14 @@ class IAMParagraphs(BaseDataModule):
     def setup(self, stage: str = None) -> None:
         def _load_dataset(split: str, transform: Callable) -> BaseDataset:
             crops, labels = load_processed_crops_and_labels(split)
-            Y = convert_strings_to_labels(
-                strings=labels, mapping=self.inverse_mapping, length=self.output_dims[0]
-            )
+            Y = convert_strings_to_labels(strings=labels, mapping=self.inverse_mapping, length=self.output_dims[0])
             return BaseDataset(crops, Y, transform=transform)
 
-        rank_zero_info(
-            f"IAMParagraphs.setup({stage}): Loading IAM paragraph regions and lines..."
-        )
-        validate_input_and_output_dimensions(
-            input_dims=self.input_dims, output_dims=self.output_dims
-        )
+        rank_zero_info(f"IAMParagraphs.setup({stage}): Loading IAM paragraph regions and lines...")
+        validate_input_and_output_dimensions(input_dims=self.input_dims, output_dims=self.output_dims)
 
         if stage == "fit" or stage is None:
-            self.data_train = _load_dataset(
-                split="train", transform=self.trainval_transform
-            )
+            self.data_train = _load_dataset(split="train", transform=self.trainval_transform)
             self.data_val = _load_dataset(split="val", transform=self.transform)
 
         if stage == "test" or stage is None:
@@ -133,17 +123,10 @@ def validate_input_and_output_dimensions(
     properties = get_dataset_properties()
 
     max_image_shape = properties["crop_shape"]["max"] / IMAGE_SCALE_FACTOR
-    assert (
-        input_dims is not None
-        and input_dims[1] >= max_image_shape[0]
-        and input_dims[2] >= max_image_shape[1]
-    )
+    assert input_dims is not None and input_dims[1] >= max_image_shape[0] and input_dims[2] >= max_image_shape[1]
 
     # Add 2 because of start and end tokens
-    assert (
-        output_dims is not None
-        and output_dims[0] >= properties["label_length"]["max"] + 2
-    )
+    assert output_dims is not None and output_dims[0] >= properties["label_length"]["max"] + 2
 
 
 def get_paragraph_crops_and_labels(
@@ -162,9 +145,7 @@ def get_paragraph_crops_and_labels(
     return crops, labels
 
 
-def save_crops_and_labels(
-    crops: Dict[str, Image.Image], labels: Dict[str, str], split: str
-):
+def save_crops_and_labels(crops: Dict[str, Image.Image], labels: Dict[str, str], split: str):
     """Save crops, labels and shapes of crops of a split."""
     (PROCESSED_DATA_DIRNAME / split).mkdir(parents=True, exist_ok=True)
 
@@ -183,9 +164,7 @@ def load_processed_crops_and_labels(
         labels = json.load(f)
 
     sorted_ids = sorted(labels.keys())
-    ordered_crops = [
-        Image.open(_crop_filename(id_, split)).convert("L") for id_ in sorted_ids
-    ]
+    ordered_crops = [Image.open(_crop_filename(id_, split)).convert("L") for id_ in sorted_ids]
     ordered_labels = [labels[id_] for id_ in sorted_ids]
 
     assert len(ordered_crops) == len(ordered_labels)

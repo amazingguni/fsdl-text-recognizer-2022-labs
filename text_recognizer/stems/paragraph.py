@@ -26,9 +26,7 @@ class ParagraphStem(ImageStem):
         super().__init__()
 
         if not augment:
-            self.pil_transforms = transforms.Compose(
-                [transforms.CenterCrop(IMAGE_SHAPE)]
-            )
+            self.pil_transforms = transforms.Compose([transforms.CenterCrop(IMAGE_SHAPE)])
         else:
             if color_jitter_kwargs is None:
                 color_jitter_kwargs = {"brightness": 0.4, "contrast": 0.4}

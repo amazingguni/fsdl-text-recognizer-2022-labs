@@ -17,9 +17,7 @@ class SentenceGenerator:
 
     def __init__(self, max_length: Optional[int] = None):
         self.text = brown_text()
-        self.word_start_inds = [0] + [
-            _.start(0) + 1 for _ in re.finditer(" ", self.text)
-        ]
+        self.word_start_inds = [0] + [_.start(0) + 1 for _ in re.finditer(" ", self.text)]
         self.max_length = max_length
 
     def generate(self, max_length: Optional[int] = None) -> str:
@@ -27,20 +25,14 @@ class SentenceGenerator:
         if max_length is None:
             max_length = self.max_length
         if max_length is None:
-            raise ValueError(
-                "Must provide max_length to this method or when making this object."
-            )
+            raise ValueError("Must provide max_length to this method or when making this object.")
 
         sampled_text, num_tries = None, 0
-        while (not sampled_text) and (
-            num_tries <= 10
-        ):  # try several times to generate sample text
+        while (not sampled_text) and (num_tries <= 10):  # try several times to generate sample text
             first_ind = np.random.randint(0, len(self.word_start_inds) - 1)
             start_ind = self.word_start_inds[first_ind]
 
-            end_ind_candidates = self._get_end_ind_candidates(
-                first_ind, start_ind, max_length
-            )
+            end_ind_candidates = self._get_end_ind_candidates(first_ind, start_ind, max_length)
 
             if len(end_ind_candidates) == 0:  # sampling failed, try again
                 num_tries += 1
@@ -53,9 +45,7 @@ class SentenceGenerator:
         else:
             raise RuntimeError("Was not able to generate a valid string")
 
-    def _get_end_ind_candidates(
-        self, first_ind: int, start_ind: int, max_length: int
-    ) -> List[int]:
+    def _get_end_ind_candidates(self, first_ind: int, start_ind: int, max_length: int) -> List[int]:
         end_ind_candidates = []
         for ind in range(first_ind + 1, len(self.word_start_inds)):
             if self.word_start_inds[ind] - start_ind > max_length:

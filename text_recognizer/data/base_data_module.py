@@ -34,9 +34,7 @@ def _download_raw_dataset(metadata: Dict, dl_dirname: Path) -> Path:
     print("Computing SHA-256...")
     sha256 = util.compute_sha256(filename)
     if sha256 != metadata["sha256"]:
-        raise ValueError(
-            "Downloaded data file SHA-256 does not match that listed in metadata document."
-        )
+        raise ValueError("Downloaded data file SHA-256 does not match that listed in metadata document.")
     return filename
 
 
@@ -47,9 +45,7 @@ NUM_AVAIL_GPUS = torch.cuda.device_count()
 # sensible multiprocessing defaults: at most one worker per CPU
 DEFAULT_NUM_WORKERS = NUM_AVAIL_CPUS
 # but in distributed data parallel mode, we launch a training on each GPU, so must divide out to keep total at one worker per CPU
-DEFAULT_NUM_WORKERS = (
-    NUM_AVAIL_CPUS // NUM_AVAIL_GPUS if NUM_AVAIL_GPUS else DEFAULT_NUM_WORKERS
-)
+DEFAULT_NUM_WORKERS = NUM_AVAIL_CPUS // NUM_AVAIL_GPUS if NUM_AVAIL_GPUS else DEFAULT_NUM_WORKERS
 
 
 class BaseDataModule(pl.LightningDataModule):

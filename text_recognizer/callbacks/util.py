@@ -10,6 +10,4 @@ def check_and_warn(logger, attribute, feature):
 
 
 def warn_no_attribute(blocked_feature, missing_attribute):
-    logging.warning(
-        f"Unable to log {blocked_feature}: logger does not have attribute {missing_attribute}."
-    )
+    logging.warning(f"Unable to log {blocked_feature}: logger does not have attribute {missing_attribute}.")

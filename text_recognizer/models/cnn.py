@@ -19,9 +19,7 @@ class ConvBlock(nn.Module):
 
     def __init__(self, input_channels: int, output_channels: int) -> None:
         super().__init__()
-        self.conv = nn.Conv2d(
-            input_channels, output_channels, kernel_size=3, stride=1, padding=1
-        )
+        self.conv = nn.Conv2d(input_channels, output_channels, kernel_size=3, stride=1, padding=1)
         self.relu = nn.ReLU()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -45,9 +43,7 @@ class ConvBlock(nn.Module):
 class CNN(nn.Module):
     """Simple CNN for recognizing characters in a square image."""
 
-    def __init__(
-        self, data_config: Dict[str, Any], args: argparse.Namespace = None
-    ) -> None:
+    def __init__(self, data_config: Dict[str, Any], args: argparse.Namespace = None) -> None:
         super().__init__()
         self.args = vars(args) if args is not None else {}
         self.data_config = data_config
@@ -90,9 +86,7 @@ class CNN(nn.Module):
             (B, Cl) tensor
         """
         _B, _Ch, H, W = x.shape
-        assert (
-            H == self.input_height and W == self.input_width
-        ), f"bad inputs to CNN with shape {x.shape}"
+        assert H == self.input_height and W == self.input_width, f"bad inputs to CNN with shape {x.shape}"
         x = self.conv1(x)  # _B, CONV_DIM, H, W
         x = self.conv2(x)  # _B, CONV_DIM, H, W
         x = self.max_pool(x)  # _B, CONV_DIM, H // 2, W // 2

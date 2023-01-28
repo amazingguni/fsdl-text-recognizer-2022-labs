@@ -67,9 +67,7 @@ class IAM:
         info.append(f"Total Images: {len(self.xml_filenames)}")
         info.append(f"Total Test Images: {len(self.test_ids)}")
         info.append(f"Total Paragraphs: {len(self.paragraph_string_by_id)}")
-        num_lines = sum(
-            len(line_regions) for line_regions in self.line_regions_by_id.items()
-        )
+        num_lines = sum(len(line_regions) for line_regions in self.line_regions_by_id.items())
         info.append(f"Total Lines: {num_lines}")
 
         return "\n\t".join(info)
@@ -103,9 +101,7 @@ class IAM:
     @cachedproperty
     def test_ids(self):
         """A list of form IDs from the IAM Lines LWITLRT test set."""
-        return _get_ids_from_lwitlrt_split_file(
-            EXTRACTED_DATASET_DIRNAME / "task/testset.txt"
-        )
+        return _get_ids_from_lwitlrt_split_file(EXTRACTED_DATASET_DIRNAME / "task/testset.txt")
 
     @property
     def xml_filenames(self) -> List[Path]:
@@ -115,14 +111,8 @@ class IAM:
     @cachedproperty
     def validation_ids(self):
         """A list of form IDs from IAM Lines LWITLRT validation sets 1 and 2."""
-        val_ids = _get_ids_from_lwitlrt_split_file(
-            EXTRACTED_DATASET_DIRNAME / "task/validationset1.txt"
-        )
-        val_ids.extend(
-            _get_ids_from_lwitlrt_split_file(
-                EXTRACTED_DATASET_DIRNAME / "task/validationset2.txt"
-            )
-        )
+        val_ids = _get_ids_from_lwitlrt_split_file(EXTRACTED_DATASET_DIRNAME / "task/validationset1.txt")
+        val_ids.extend(_get_ids_from_lwitlrt_split_file(EXTRACTED_DATASET_DIRNAME / "task/validationset2.txt"))
         return val_ids
 
     @property
@@ -143,26 +133,17 @@ class IAM:
     @cachedproperty
     def line_strings_by_id(self):
         """A dict mapping an IAM form id to its list of line texts."""
-        return {
-            filename.stem: _get_line_strings_from_xml_file(filename)
-            for filename in self.xml_filenames
-        }
+        return {filename.stem: _get_line_strings_from_xml_file(filename) for filename in self.xml_filenames}
 
     @cachedproperty
     def line_regions_by_id(self):
         """A dict mapping an IAM form id to its list of line image crop regions."""
-        return {
-            filename.stem: _get_line_regions_from_xml_file(filename)
-            for filename in self.xml_filenames
-        }
+        return {filename.stem: _get_line_regions_from_xml_file(filename) for filename in self.xml_filenames}
 
     @cachedproperty
     def paragraph_string_by_id(self):
         """A dict mapping an IAM form id to its paragraph text."""
-        return {
-            id: NEW_LINE_TOKEN.join(line_strings)
-            for id, line_strings in self.line_strings_by_id.items()
-        }
+        return {id: NEW_LINE_TOKEN.join(line_strings) for id, line_strings in self.line_strings_by_id.items()}
 
     @cachedproperty
     def paragraph_region_by_id(self):
@@ -190,9 +171,7 @@ def _get_ids_from_lwitlrt_split_file(filename: str) -> List[str]:
     with open(filename, "r") as f:
         line_ids_str = f.read()
     line_ids = line_ids_str.split("\n")
-    page_ids = list(
-        {"-".join(line_id.split("-")[:2]) for line_id in line_ids if line_id}
-    )
+    page_ids = list({"-".join(line_id.split("-")[:2]) for line_id in line_ids if line_id})
     return page_ids
 
 
@@ -217,16 +196,12 @@ def _get_line_regions_from_xml_file(filename: str) -> List[Dict[str, int]]:
         )
         for el in xml_line_elements
     ]
-    assert any(
-        region is not None for region in line_regions
-    ), "Line regions cannot be None"
+    assert any(region is not None for region in line_regions), "Line regions cannot be None"
 
     # next_line_region["y1"] - prev_line_region["y2"] can be negative due to overlapping characters
     line_gaps_y = [
         max(next_line_region["y1"] - prev_line_region["y2"], 0)
-        for next_line_region, prev_line_region in zip(
-            line_regions[1:], line_regions[:-1]
-        )
+        for next_line_region, prev_line_region in zip(line_regions[1:], line_regions[:-1])
     ]
     post_line_gaps_y = line_gaps_y + [2 * metadata.LINE_REGION_PADDING]
     pre_line_gaps_y = [2 * metadata.LINE_REGION_PADDING] + line_gaps_y
@@ -235,10 +210,8 @@ def _get_line_regions_from_xml_file(filename: str) -> List[Dict[str, int]]:
         {
             "x1": region["x1"] - metadata.LINE_REGION_PADDING,
             "x2": region["x2"] + metadata.LINE_REGION_PADDING,
-            "y1": region["y1"]
-            - min(metadata.LINE_REGION_PADDING, pre_line_gaps_y[i] // 2),
-            "y2": region["y2"]
-            + min(metadata.LINE_REGION_PADDING, post_line_gaps_y[i] // 2),
+            "y1": region["y1"] - min(metadata.LINE_REGION_PADDING, pre_line_gaps_y[i] // 2),
+            "y2": region["y2"] + min(metadata.LINE_REGION_PADDING, post_line_gaps_y[i] // 2),
         }
         for i, region in enumerate(line_regions)
     ]
@@ -250,9 +223,7 @@ def _get_line_elements_from_xml_file(filename: str) -> List[Any]:
     return xml_root_element.findall("handwritten-part/line")
 
 
-def _get_region_from_xml_element(
-    xml_elem: Any, xml_path: str
-) -> Optional[Dict[str, int]]:
+def _get_region_from_xml_element(xml_elem: Any, xml_path: str) -> Optional[Dict[str, int]]:
     """
     Get region from input xml element. The region is downsampled because the stored images are also downsampled.
 
@@ -267,16 +238,10 @@ def _get_region_from_xml_element(
     if not unit_elements:
         return None
     return {
-        "x1": min(int(el.attrib["x"]) for el in unit_elements)
-        // metadata.DOWNSAMPLE_FACTOR,
-        "y1": min(int(el.attrib["y"]) for el in unit_elements)
-        // metadata.DOWNSAMPLE_FACTOR,
-        "x2": max(int(el.attrib["x"]) + int(el.attrib["width"]) for el in unit_elements)
-        // metadata.DOWNSAMPLE_FACTOR,
-        "y2": max(
-            int(el.attrib["y"]) + int(el.attrib["height"]) for el in unit_elements
-        )
-        // metadata.DOWNSAMPLE_FACTOR,
+        "x1": min(int(el.attrib["x"]) for el in unit_elements) // metadata.DOWNSAMPLE_FACTOR,
+        "y1": min(int(el.attrib["y"]) for el in unit_elements) // metadata.DOWNSAMPLE_FACTOR,
+        "x2": max(int(el.attrib["x"]) + int(el.attrib["width"]) for el in unit_elements) // metadata.DOWNSAMPLE_FACTOR,
+        "y2": max(int(el.attrib["y"]) + int(el.attrib["height"]) for el in unit_elements) // metadata.DOWNSAMPLE_FACTOR,
     }
 
 
