@@ -10,6 +10,7 @@ nltk
 pre-commit
 pytest
 pytest-cov
+black
 scipy
 toml
 # versioned to give pip hints

@@ -7,8 +7,8 @@ from typing import Union
 from urllib.request import urlretrieve
 
 import numpy as np
-import smart_open
 from PIL import Image
+import smart_open
 from tqdm import tqdm
 
 

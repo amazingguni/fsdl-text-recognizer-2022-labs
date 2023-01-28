@@ -1,21 +1,22 @@
 """EMNIST dataset. Downloads from NIST website and saves as .npz file if not already present."""
 import json
 import os
-import shutil
-import zipfile
 from pathlib import Path
+import shutil
 from typing import Sequence
+import zipfile
 
 import h5py
 import numpy as np
-import text_recognizer.metadata.emnist as metadata
 import toml
+
 from text_recognizer.data.base_data_module import (
-    BaseDataModule,
     _download_raw_dataset,
+    BaseDataModule,
     load_and_print_info,
 )
 from text_recognizer.data.util import BaseDataset, split_dataset
+import text_recognizer.metadata.emnist as metadata
 from text_recognizer.stems.image import ImageStem
 from text_recognizer.util import temporary_working_directory
 

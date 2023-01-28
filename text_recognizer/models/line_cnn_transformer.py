@@ -7,7 +7,7 @@ import torch
 from torch import nn
 
 from .line_cnn import LineCNN
-from .transformer_util import PositionalEncoding, generate_square_subsequent_mask
+from .transformer_util import generate_square_subsequent_mask, PositionalEncoding
 
 TF_DIM = 256
 TF_FC_DIM = 256
