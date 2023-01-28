@@ -2,8 +2,8 @@
 import math
 
 import torch
-from torch import Tensor
 import torch.nn as nn
+from torch import Tensor
 
 
 class PositionalEncodingImage(nn.Module):
@@ -94,7 +94,19 @@ class PositionalEncoding(torch.nn.Module):
 
 
 def generate_square_subsequent_mask(size: int) -> torch.Tensor:
-    """Generate a triangular (size, size) mask."""
+    """
+    Generate a triangular (size, size) mask.
+
+    Parameters
+    ----------
+    size : int
+        Size of square subsequent mask
+
+    Returns
+    -------
+    torch.Tensor
+        Generated square mask.
+    """
     mask = (torch.triu(torch.ones(size, size)) == 1).transpose(0, 1)
     mask = (
         mask.float()

@@ -9,7 +9,9 @@ from torchvision import transforms
 class LineStem(ImageStem):
     """A stem for handling images containing a line of text."""
 
-    def __init__(self, augment=False, color_jitter_kwargs=None, random_affine_kwargs=None):
+    def __init__(
+        self, augment=False, color_jitter_kwargs=None, random_affine_kwargs=None
+    ):
         super().__init__()
         if color_jitter_kwargs is None:
             color_jitter_kwargs = {"brightness": (0.5, 1)}
@@ -35,7 +37,9 @@ class LineStem(ImageStem):
 class IAMLineStem(ImageStem):
     """A stem for handling images containing lines of text from the IAMLines dataset."""
 
-    def __init__(self, augment=False, color_jitter_kwargs=None, random_affine_kwargs=None):
+    def __init__(
+        self, augment=False, color_jitter_kwargs=None, random_affine_kwargs=None
+    ):
         super().__init__()
 
         def embed_crop(crop, augment=augment):
@@ -50,7 +54,9 @@ class IAMLineStem(ImageStem):
                 # Add random stretching
                 new_crop_width = int(new_crop_width * random.uniform(0.9, 1.1))
                 new_crop_width = min(new_crop_width, metadata.IMAGE_WIDTH)
-            crop_resized = crop.resize((new_crop_width, new_crop_height), resample=Image.BILINEAR)
+            crop_resized = crop.resize(
+                (new_crop_width, new_crop_height), resample=Image.BILINEAR
+            )
 
             # Embed in the image
             x = min(metadata.CHAR_WIDTH, metadata.IMAGE_WIDTH - new_crop_width)
